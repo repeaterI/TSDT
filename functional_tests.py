@@ -27,7 +27,7 @@ class NewVisitorTest(unittest.TestCase):
         inputbox = self.browser.find_element(By.ID, 'id_new_item') #(1)
         self.assertEqual(
             inputbox.get_attribute('placeholder'),
-            'Enter a to-do item'
+            "Enter a to-do item"
             )
         
         # 输入”Buy flowers“
@@ -40,9 +40,22 @@ class NewVisitorTest(unittest.TestCase):
         table = self.browser.find_element(By.ID,'id_list_table')
         rows = table.find_elements(By.TAG_NAME,'tr') #(1)
         self.assertIn('1: Buy flowers', [row.text for row in rows])
+        
+        # 再显示文又文本输入框：待办事项
+        # 输入“Give a gift to Lisi”
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Give a gift to Lisi') 
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
 
-        # 再显示文本输入框：其他事项
-        # 输入 “gift to gf”
+        #页面再次更新，清单中显示两个代办
+        table = self.browser.find_element(By.ID,'id_list_table')
+        rows = table.find_elements(By.TAG_NAME,'tr') #(1)
+        self.assertIn('1: Buy flowers', [row.text for row in rows])
+        self.assertIn('2: Give a gift to Lisi', [row.text for row in rows])
+
+        # 网站生成唯一的URL，记住清单
+
         self.fail('Finish the test!')
 
 if __name__ == '__main__':
