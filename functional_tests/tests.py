@@ -6,6 +6,9 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.common.by import By
 from django.test import LiveServerTestCase
+from selenium.common.exceptions import WebDriverException
+
+MAX_WAIT = 10 #(1)
 
 class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
@@ -14,10 +17,20 @@ class NewVisitorTest(LiveServerTestCase):
     def tearDown(self):
         self.browser.quit()
 
-    def check_for_row_in_list_table(self, row_text):
-        table = self.browser.find_element(By.ID,'id_list_table')
-        rows = table.find_elements(By.TAG_NAME,'tr')
-        self.assertIn(row_text, [row.text for row in rows])
+    def wait_for_row_in_list_table(self, row_text):
+        start_time = time.time()
+        while True: #(2)
+            try:
+                table = self.browser.find_element(By.ID,'id_list_table') #(3)
+                rows = table.find_elements(By.TAG_NAME,'tr')
+                self.assertIn(row_text, [row.text for row in rows])
+                return #(4)
+            except (AssertionError, WebDriverException) as e: #(5)
+                if time.time() - start_time > MAX_WAIT: #(6)
+                    raise e #(6)
+                time.sleep(0.5) #(5)
+
+       
 
     def test_can_start_a_list_and_retrieve_it_later(self):
         # 查看应用首页
@@ -41,7 +54,7 @@ class NewVisitorTest(LiveServerTestCase):
         # 回车更新，表格显示”1：Buy flowers“
         inputbox.send_keys(Keys.ENTER) #(3)
         time.sleep(1) #(4)
-        self.check_for_row_in_list_table('1: Buy flowers')
+        self.wait_for_row_in_list_table('1: Buy flowers')
 
         # 再显示文又文本输入框：待办事项
         # 输入“Give a gift to Lisi”
@@ -51,8 +64,8 @@ class NewVisitorTest(LiveServerTestCase):
         time.sleep(1)
 
         #页面再次更新，清单中显示两个代办
-        self.check_for_row_in_list_table('1: Buy flowers')
-        self.check_for_row_in_list_table('2: Give a gift to Lisi')
+        self.wait_for_row_in_list_table('1: Buy flowers')
+        self.wait_for_row_in_list_table('2: Give a gift to Lisi')
 
         # 网站生成唯一的URL，记住清单
 
