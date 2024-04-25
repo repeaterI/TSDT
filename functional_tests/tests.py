@@ -88,7 +88,7 @@ class NewVisitorTest(LiveServerTestCase):
         self.assertNotIn('Give a gift to Lisi', page_text)
 
         #wangwu输入代办，新建清单
-        inputbox= self.browser.find_element(By.ID, 'id new item')
+        inputbox= self.browser.find_element(By.ID, 'id_new_item')
         inputbox.send_keys('Buy milk')
         inputbox.send_keys(Keys.ENTER)
         self.wait_for_row_in_list_table('1: Buy milk')
