@@ -53,7 +53,6 @@ class NewVisitorTest(LiveServerTestCase):
 
         # 回车更新，表格显示”1：Buy flowers“
         inputbox.send_keys(Keys.ENTER) #(3)
-        time.sleep(1) #(4)
         self.wait_for_row_in_list_table('1: Buy flowers')
 
         # 再显示文又文本输入框：待办事项
@@ -61,12 +60,47 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         inputbox.send_keys('Give a gift to Lisi') 
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         #页面再次更新，清单中显示两个代办
         self.wait_for_row_in_list_table('1: Buy flowers')
         self.wait_for_row_in_list_table('2: Give a gift to Lisi')
 
-        # 网站生成唯一的URL，记住清单
+    def test_mutiple_users_can_start_lists_at_different_urls(self):
+        #zhangsan新建一个代办事项清单
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Buy flowers') 
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy flowers')
 
-        self.fail('Finish the test!')
+        #清单有唯一的url
+        zhangsan_list_url = self.browser.current_url
+        self.assertRegex(zhangsan_list_url, '/lists/.+') #(1)
+
+        #新用户wangwu访问网站，开启新浏览器会话，保证cookie不泄露信息
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        #wangwu访问首页，但看不到张三的清单
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        self.assertNotIn('Buy flowers', page_text)
+        self.assertNotIn('Give a gift to Lisi', page_text)
+
+        #wangwu输入代办，新建清单
+        inputbox= self.browser.find_element(By.ID, 'id new item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy milk')
+
+        #王五获得唯一URL
+        wangwu_list_url = self.browser.current_url
+        self.assertRegex(wangwu_list_url, '/lists/. +')
+        self.assertNotEqual(wangwu_list_url, zhangsan_list_url)
+        
+        # 这个页面还是没有张三的清单
+        page_text= self.browser.find_element(By.TAG_NAME,'body').text
+        self.assertNotIn('Buy flowers', page_text)
+        self.assertIn('Buy milk', page_text)
+
+        #两人都很满意，然后去睡觉了
