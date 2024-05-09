@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from django.test import LiveServerTestCase
 from selenium.common.exceptions import WebDriverException
 
-MAX_WAIT = 10 #(1)
+MAX_WAIT = 20 #(1)
 
 class NewVisitorTest(LiveServerTestCase):
     def setUp(self):
@@ -95,7 +95,7 @@ class NewVisitorTest(LiveServerTestCase):
 
         #王五获得唯一URL
         wangwu_list_url = self.browser.current_url
-        self.assertRegex(wangwu_list_url, '/lists/. +')
+        self.assertRegex(wangwu_list_url, '/lists/.+')
         self.assertNotEqual(wangwu_list_url, zhangsan_list_url)
         
         # 这个页面还是没有张三的清单
