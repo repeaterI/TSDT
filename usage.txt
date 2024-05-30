@@ -1,0 +1,42 @@
+启动服务器：(SPI) PS C:\Users\25732\notes> python manage.py runserver
+  部署后：root@iZ0jld2xo2oqll0mvm8dj6Z:/home/ltm/sites/8.130.102.214/source# 
+          ../virtualenv/bin/python manage.py runserver
+
+运行单元测试：(SPI) PS C:\Users\25732\notes> python manage.py test 
+  独立后（git12) :python manage.py test lists
+  部署后 (git25) :$env:REAL_SERVER="8.130.102.214"  python manage.py test lists
+
+  在 Django 项目中，每个应用的 tests.py 文件中可以包含多个测试函数，
+  这些函数通常使用 Django 提供的 unittest 或 TestCase 测试框架编写。
+  当你运行 python manage.py test 命令时，Django 会自动搜索并运行每个应用中的 tests.py 文件中的所有测试函数。
+
+运行功能测试：(SPI) PS C:\Users\25732\notes\lists> python functional_tests.py
+  独立后（git12) ：python manage.py test functional_tests
+  部署后 (git25) :$env:REAL_SERVER="8.130.102.214"  python manage.py test functional_tests
+
+创建迁移：(SPI) PS C:\Users\25732\notes> python manage.py makemigrations
+
+生成数据库：(SPI) PS C:\Users\25732\notes> python manage.py migrate
+
+-----
+1. lists文件框架：
+ views.py、tests.py 和 models.py 以及 lists/templates 下的 home.html 之间有着密切的关系，
+ 它们通常组成了一个 Django 应用的核心部分。
+
+views.py 中的视图函数负责处理 HTTP 请求，并根据需要调用模型方法处理数据逻辑，最终渲染模板。
+tests.py 中的测试用例负责对视图函数、模型方法等进行测试，以确保其功能和行为符合预期。
+models.py 中的模型定义了数据结构和业务逻辑，为视图函数提供数据支持。
+templates/home.html 是一个 HTML 模板文件，与主页相关联，用于渲染主页的页面结构和内容。
+
+MTV设计模式：
+1. Model（模型）：
+模型层负责定义应用程序的数据结构和业务逻辑。
+在 Django 中，模型通常使用 Django ORM 来定义，它们映射到数据库中的数据表，并提供对数据的操作方法。
+
+2.Template（模板）：
+模板层负责定义应用程序的用户界面。
+在 Django 中，模板通常使用 Django 模板语言编写，它们负责生成 HTML 页面，以呈现数据给用户。
+
+3. View（视图）：
+视图层负责处理 HTTP 请求和生成 HTTP 响应。
+在 Django 中，视图通常是一个 Python 函数或者类，它们接收 HTTP 请求，从模型中获取数据，并将数据传递给模板，最终生成并返回 HTTP 响应。
