@@ -28,7 +28,7 @@ def _get_latest_source(source_folder):
     run(f'cd {source_folder} &&  git reset --hard {current_commit}')  #(6)
 
 def  _update_settings(source_folder,site_name):
-    setting_path = source_folder + '/notes/setting.py'
+    setting_path = source_folder + '/notes/settings.py'
     sed(setting_path, "DEBUG = True", "DEBUG = False")  #(1)
     sed(setting_path,
         'ALLOWED_HOSTS =.+$',
@@ -50,12 +50,12 @@ def _update_virtualenv(source_folder):
 def _update_static_files(source_folder):
     run(
         f'cd {source_folder}' #(1)
-        '&& ../virtualenv/bin/python manage.py collectstatic --noinpuy'
+        '&& ../virtualenv/bin/python manage.py collectstatic --noinput'
     )
 def _update_database(source_folder):
     run(
         f'cd {source_folder}' 
-        '&& ../virtualenv/bin/python manage.py migrate --noinpuy'
+        '&& ../virtualenv/bin/python manage.py migrate --noinput'
     )
 
 if __name__ == "__main__":
